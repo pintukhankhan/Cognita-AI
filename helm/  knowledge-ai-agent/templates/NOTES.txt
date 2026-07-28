@@ -1,1 +1,7 @@
+Cognita deployed. 🧠
+  API:    https://{{ .Values.ingress.host }}{{ .Values.config.API_V1_PREFIX }}
+  Docs:   https://{{ .Values.ingress.host }}/docs
+  Health: https://{{ .Values.ingress.host }}{{ .Values.config.API_V1_PREFIX }}/health/ready
 
+Verify:
+  kubectl -n {{ .Release.Namespace }} rollout status deploy/{{ include "app.fullname" . }}
