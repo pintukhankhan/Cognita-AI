@@ -1,1 +1,34 @@
-
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: cognita, namespace: production, labels: { app: cognita } }
+spec:
+  replicas: 3
+  selector: { matchLabels: { app: cognita } }
+  template:
+    metadata: { labels: { app: cognita } }
+    spec:
+      containers:
+      - name: cognita
+        image: ghcr.io/your-org/cognita:latest
+        ports: [{ containerPort: 8000 }]
+        envFrom: [{ secretRef: { name: cognita-secrets } }]
+        livenessProbe:  { httpGet: { path: /api/v1/health/live,  port: 8000 }, initialDelaySeconds: 20 }
+        readinessProbe: { httpGet: { path: /api/v1/health/ready, port: 8000 }, initialDelaySeconds: 5 }
+        resources: { requests: { cpu: 250m, memory: 512Mi }, limits: { cpu: "1", memory: 2Gi } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: cognita, namespace: production }
+spec:
+  selector: { app: cognita }
+  ports: [{ port: 80, targetPort: 8000 }]
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: cognita, namespace: production }
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: cognita }
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - { type: Resource, resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } } }
