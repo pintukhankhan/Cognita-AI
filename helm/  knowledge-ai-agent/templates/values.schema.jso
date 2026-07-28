@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "config": {
+      "type": ["object", "null"],
+      "additionalProperties": { "type": ["string", "number", "boolean", "null"] },
+      "description": "Optional non-secret env vars rendered into a ConfigMap. Omit to use only the Secret."
+    },
+    "existingSecret": { "type": "string", "minLength": 1 }
+  },
+  "required": ["existingSecret"]
+}
