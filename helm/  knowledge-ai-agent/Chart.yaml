@@ -1,1 +1,6 @@
-
+apiVersion: v2
+name: cognita
+description: Cognita — knowledge-grounded chat AI agent
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
