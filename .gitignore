@@ -19,5 +19,16 @@ rad.json
 #License-files
 *.bclicense
 *.flf
+.venv/
+__pycache__/
+*.pyc
+.env
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+data/corpus/*
+!data/corpus/.gitkeep
 #Test results file
 TestResults.xml
