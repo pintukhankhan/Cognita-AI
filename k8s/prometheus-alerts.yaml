@@ -1,1 +1,15 @@
-
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata: { name: cognita, namespace: monitoring }
+spec:
+  groups:
+  - name: cognita
+    rules:
+    - alert: CognitaHighErrorRate
+      expr: sum(rate(cognita_http_requests_total{status=~"5.."}[5m]))/sum(rate(cognita_http_requests_total[5m])) > 0.05
+      for: 5m
+      labels: { severity: critical }
+    - alert: CognitaHighLatency
+      expr: histogram_quantile(0.95, sum(rate(cognita_http_request_latency_seconds_bucket[5m])) by (le)) > 2
+      for: 10m
+      labels: { severity: warning }
