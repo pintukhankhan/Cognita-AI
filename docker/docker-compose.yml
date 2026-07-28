@@ -1,1 +1,20 @@
-
+services:
+  cognita:
+    container_name: cognita
+    build: { context: .., dockerfile: docker/Dockerfile }
+    ports: ["8000:8000"]
+    env_file: ../.env
+    depends_on: [redis, neo4j]
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+  neo4j:
+    image: neo4j:5.15
+    ports: ["7474:7474", "7687:7687"]
+    environment: { NEO4J_AUTH: "neo4j/${NEO4J_PASSWORD}" }
+  prometheus:
+    image: prom/prometheus:latest
+    ports: ["9090:9090"]
+  grafana:
+    image: grafana/grafana:latest
+    ports: ["3000:3000"]
