@@ -1,1 +1,39 @@
-
+replicaCount: 3
+image:
+  repository: ghcr.io/your-org/cognita
+  tag: "latest"
+  pullPolicy: IfNotPresent
+serviceAccount:
+  create: true
+  name: cognita
+  annotations: {}
+service: { type: ClusterIP, port: 80 }
+ingress:
+  enabled: true
+  className: nginx
+  host: api.example.com
+  tls: true
+  certIssuer: letsencrypt-prod
+resources:
+  requests: { cpu: 250m, memory: 512Mi }
+  limits:   { cpu: "1",  memory: 2Gi }
+autoscaling: { enabled: true, minReplicas: 3, maxReplicas: 10, targetCPU: 70 }
+config:
+  APP_NAME: "Cognita"
+  ENVIRONMENT: "production"
+  DEBUG: "false"
+  API_V1_PREFIX: "/api/v1"
+  OPENAI_MODEL: "gpt-4o"
+  OPENAI_EMBEDDING_MODEL: "text-embedding-3-large"
+  EMBEDDING_DIM: "3072"
+  PINECONE_INDEX_NAME: "cognita-knowledge"
+  REDIS_URL: "rediss://<redis-endpoint>:6379/0"
+  NEO4J_URI: "neo4j+s://<aura-endpoint>"
+  NEO4J_USER: "neo4j"
+  RATE_LIMIT_REQUESTS: "100"
+  RATE_LIMIT_WINDOW: "60"
+existingSecret: cognita-secrets
+probes:
+  liveness:  { path: /api/v1/health/live,  initialDelay: 20, period: 10 }
+  readiness: { path: /api/v1/health/ready, initialDelay: 5,  period: 5 }
+monitoring: { enabled: true, metricsPath: /metrics, interval: 30s }
